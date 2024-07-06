@@ -7,8 +7,8 @@ services:
     environment:
       MYSQL_DATABASE: ${DATABASE_NAME}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_USER: ${DATABASE_USER}
-      MYSQL_PASSWORD: ${DATABASE_PASSWORD}
+      # MYSQL_USER: ${DATABASE_USER}
+      # MYSQL_PASSWORD: ${DATABASE_PASSWORD}
     volumes:
       - .dbdata:/var/lib/mysql
     ports:
@@ -23,7 +23,7 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "${SERVICE_PORT}:${RUN_SERVER_PORT}"
+      - "${SERVICE_PORT}:${SERVICE_PORT}"
     volumes:
       - .:/app
     env_file:
@@ -32,3 +32,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test:
+        ["CMD", "curl", "-f", "http://localhost:${SERVICE_PORT}/api/register"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
